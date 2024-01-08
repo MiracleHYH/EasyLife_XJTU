@@ -17,13 +17,15 @@ class WebVPN:
         options.add_argument("--window-size=1920,1080")
         self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 10)
-    
+        self.wrdvpnIV = None
+        self.wrdvpnKey = None
+
     def __del__(self):
         self.driver.quit()
-        
+
     def login(self, username, password):
         self.driver.get(URLs.webvpn_login_url)
-        
+
         username_input = self.wait.until(EC.presence_of_element_located((By.NAME, 'username')))
         password_input = self.wait.until(EC.presence_of_element_located((By.NAME, 'pwd')))
 
@@ -31,7 +33,7 @@ class WebVPN:
         password_input.send_keys(password)
 
         password_input.send_keys(Keys.RETURN)
-        
+
         self.wait.until(EC.presence_of_element_located((By.ID, 'go')))
         self.wrdvpnKey = self.driver.execute_script("return wrdvpnKey;")
         self.wrdvpnIV = self.driver.execute_script("return wrdvpnIV;")
@@ -41,24 +43,24 @@ class WebVPN:
             self.driver.get(WebVPN.encrypt_url(url, self.wrdvpnKey, self.wrdvpnIV))
         except ValueError:
             print('Invalid URL')
-        
+
     @staticmethod
     def encrypt_url(url, key, iv):
         parsed_url = urlparse(url)
         if parsed_url.scheme == '' or parsed_url.netloc == '':
             raise ValueError('Invalid URL')
-        
+
         scheme = parsed_url.scheme
         hostname = parsed_url.hostname
         port = parsed_url.port
-        
+
         prefix = f'/{scheme}-{port}/' if port else f'/{scheme}/'
-        
+
         s = url.split(parsed_url.netloc)
         suffix = s[1] if len(s) > 1 else ''
-        
+
         return f'{URLs.webvpn_url}{prefix}{WebVPN.encrypt(hostname, key, iv)}{suffix}'
-        
+
     @staticmethod
     def encrypt(text, key, iv):
         text_length = len(text)
@@ -72,7 +74,7 @@ class WebVPN:
         encrypt_bytes = encryptor.update(text_bytes) + encryptor.finalize()
 
         return iv_bytes.hex() + encrypt_bytes.hex()[:text_length * 2]
-    
+
     @staticmethod
     def __text_right_append(text, mode):
         segment_byte_size = 16 if mode == 'utf8' else 32
