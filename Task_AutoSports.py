@@ -9,13 +9,13 @@ import requests
 from config import URLs
 from utils.webvpn import WebVPN
 
-import logging
-
-logger = logging.getLogger(__name__)
-console = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
+# import logging
+#
+# logger = logging.getLogger(__name__)
+# console = logging.StreamHandler()
+# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# console.setFormatter(formatter)
+# logger.addHandler(console)
 
 ll_map_rect = [
     [34.257162, 108.650036],
@@ -84,10 +84,11 @@ def work(username, password, mode):
         response = requests.post(api, data=data, headers=headers, cookies=cookies)
         msg = json.loads(response.text)['msg']
 
-        logger.info("执行结果:" + msg)
+        # logger.info("执行结果:" + msg)
+        print("执行结果:" + msg)
     except Exception as e:
-        logger.info("执行失败:" + str(e))
-
+        # logger.info("执行失败:" + str(e))
+        print("执行失败:" + str(e))
 
 if __name__ == '__main__':
     parser = ArgumentParser()
@@ -103,13 +104,18 @@ if __name__ == '__main__':
 
     auths = os.environ.get('XJTU_AUTH').split('&')
 
-    logger.info("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
-    logger.info("共有" + str(len(auths)) + "个账号")
+    # logger.info("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
+    # logger.info("共有" + str(len(auths)) + "个账号")
+
+    print("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
+    print("共有" + str(len(auths)) + "个账号")
 
     for auth in auths:
         time.sleep(10 + 20 * random.random())
         _username, _password = auth.split('$$')
         # 打印每个信息并分割
-        logger.info("开始执行" + _username + "的任务")
+        # logger.info("开始执行" + _username + "的任务")
+        print("开始执行" + _username + "的任务")
         work(_username, _password, _mode)
-        logger.info("执行" + _username + "的任务结束")
+        # logger.info("执行" + _username + "的任务结束")
+        print("执行" + _username + "的任务结束")
