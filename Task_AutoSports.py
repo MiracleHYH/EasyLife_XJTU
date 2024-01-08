@@ -49,7 +49,7 @@ def work(username, password, mode):
         webvpn = WebVPN()
         webvpn.login(username, password)
         webvpn.go(URLs.tmlyglpt_login_url)
-        time.sleep(3)
+        time.sleep(10)
 
         token = webvpn.driver.execute_script("return localStorage.getItem('__1__token');")
         selenium_cookies = webvpn.driver.get_cookies()
