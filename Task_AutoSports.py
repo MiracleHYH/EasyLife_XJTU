@@ -90,6 +90,7 @@ def work(username, password, mode):
         # logger.info("执行失败:" + str(e))
         print("执行失败:" + str(e))
 
+
 if __name__ == '__main__':
     parser = ArgumentParser()
     # parser.add_argument('-u', '--username', required=True, help='账号')
