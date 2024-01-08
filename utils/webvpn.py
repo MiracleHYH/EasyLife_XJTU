@@ -40,7 +40,6 @@ class WebVPN:
         self.wait.until(EC.presence_of_element_located((By.ID, 'go')))
         self.wrdvpnKey = self.driver.execute_script("return wrdvpnKey;")
         self.wrdvpnIV = self.driver.execute_script("return wrdvpnIV;")
-        print(self.wrdvpnKey)
 
     def go(self, url):
         try:
