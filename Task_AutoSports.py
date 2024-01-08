@@ -1,28 +1,15 @@
-from utils.login import login
-from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from config import URLs
-import time
-from utils.webvpn import WebVPN
-import requests
 import json
+import os
+import time
 from argparse import ArgumentParser
 
+import requests
 
-if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('-u', '--username', required=True, help='账号')
-    parser.add_argument('-p', '--password', required=True, help='密码')
-    parser.add_argument('-m', '--mode', required=True, type=int, choices=[1, 2], help='运行模式.1为运动签到;2为运动签退')
-    args = parser.parse_args()
-    
-    username = args.username
-    password = args.password
-    mode = args.mode
+from config import URLs
+from utils.webvpn import WebVPN
 
+
+def work(username, password, mode):
     webvpn = WebVPN()
     webvpn.login(username, password)
     webvpn.go(URLs.tmlyglpt_login_url)
@@ -31,12 +18,12 @@ if __name__ == '__main__':
     token = webvpn.driver.execute_script("return localStorage.getItem('__1__token');")
     selenium_cookies = webvpn.driver.get_cookies()
     cookies = {c['name']: c['value'] for c in selenium_cookies}
-    
+
     headers = {
         'Accept': '*/*',
         'Accept-Encoding': 'gzip, deflate, br',
         'Accept-Language': 'zh-CN,zh;q=0.9',
-        'Connection':'keep-alive',
+        'Connection': 'keep-alive',
         'Content-Type': 'application/json',
         # 'Host': 'webvpn.xjtu.edu.cn',
         # 'Origin': 'https://webvpn.xjtu.edu.cn',
@@ -61,3 +48,22 @@ if __name__ == '__main__':
     msg = json.loads(response.text)['msg']
 
     print(msg)
+
+
+if __name__ == '__main__':
+    parser = ArgumentParser()
+    # parser.add_argument('-u', '--username', required=True, help='账号')
+    # parser.add_argument('-p', '--password', required=True, help='密码')
+    parser.add_argument('-m', '--mode', required=True, type=int, choices=[1, 2],
+                        help='运行模式.1为运动签到;2为运动签退')
+    args = parser.parse_args()
+    #
+    # username = args.username
+    # password = args.password
+    _mode = args.mode
+
+    auths = os.environ.get('XJTU_AUTH').split('&')
+
+    for auth in auths:
+        _username, _password = auth.split('$$')
+        work(_username, _password, _mode)
