@@ -15,6 +15,9 @@ class WebVPN:
         options = Options()
         options.add_argument('--headless')
         options.add_argument("--window-size=1920,1080")
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 10)
         self.wrdvpnIV = None
