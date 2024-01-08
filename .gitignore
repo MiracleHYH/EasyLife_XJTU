@@ -1,0 +1,18 @@
+# .gitignore
+
+# python scripts
+*.pyc
+*.pyo
+*.pyd
+__pycache__
+
+# venv
+venv/
+
+# IDE
+.idea/
+.vscode/
+
+# logs
+logs/
+*.log
