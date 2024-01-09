@@ -1,3 +1,7 @@
+# Author: Miracle24
+# Time: 2024/1/8
+# Desc: XJTU研究生自动运动打卡
+
 import json
 import os
 import random
