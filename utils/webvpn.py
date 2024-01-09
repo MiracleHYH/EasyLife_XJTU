@@ -1,3 +1,5 @@
+import time
+
 from config import URLs
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -47,6 +49,30 @@ class WebVPN:
             self.driver.get(WebVPN.encrypt_url(url, self.wrdvpnKey, self.wrdvpnIV))
         except ValueError:
             print('Invalid URL')
+
+    def open(self, url):
+        try:
+            vpn_based_url = WebVPN.encrypt_url(url, self.wrdvpnKey, self.wrdvpnIV)
+            self.driver.execute_script("window.open(arguments[0]);", vpn_based_url)
+            return self.driver.window_handles[-1]
+        except ValueError:
+            print('Invalid URL')
+
+    def current_window(self):
+        return self.driver.current_window_handle
+
+    def switch_to_window(self, window_handle):
+        self.driver.switch_to.window(window_handle)
+
+    def close_current_window(self):
+        self.driver.close()
+
+    def close_window(self, window_handle):
+        if window_handle != self.driver.current_window_handle:
+            current_window = self.driver.current_window_handle
+            self.driver.switch_to.window(window_handle)
+            self.driver.close()
+            self.driver.switch_to.window(current_window)
 
     @staticmethod
     def encrypt_url(url, key, iv):
