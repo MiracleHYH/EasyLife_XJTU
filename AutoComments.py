@@ -39,8 +39,8 @@ def work(username, password):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    parser.add_argument('--username', type=str, required=True, help='账号')
-    parser.add_argument('--password', type=str, required=True, help='密码')
+    parser.add_argument('-u', '--username', type=str, required=True, help='账号')
+    parser.add_argument('-p', '--password', type=str, required=True, help='密码')
     args = parser.parse_args()
 
     _username = args.username
