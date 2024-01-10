@@ -115,8 +115,8 @@ def extract_text_from_column(column):
     return [item.text for item in column]
 
 
-def work(username, password, debug=False):
-    webvpn = WebVPN(debug=debug)
+def work(username, password):
+    webvpn = WebVPN()
     webvpn.login(username, password)
 
     webvpn.go(URLs.yjszhpjxt_url)
