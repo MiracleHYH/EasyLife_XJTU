@@ -13,13 +13,14 @@ import requests
 from config import URLs
 from utils.webvpn import WebVPN
 
-# import logging
-#
-# logger = logging.getLogger(__name__)
-# console = logging.StreamHandler()
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# console.setFormatter(formatter)
-# logger.addHandler(console)
+import logging
+
+logger = logging.getLogger("Task_AutoSports")
+console = logging.StreamHandler()
+formatter = logging.Formatter('[%(levelname)s] %(message)s')
+console.setFormatter(formatter)
+logger.addHandler(console)
+logger.setLevel(logging.INFO)
 
 ll_map_rect = [
     [34.257162, 108.650036],
@@ -97,35 +98,25 @@ def work(username, password, mode):
 
 if __name__ == '__main__':
     parser = ArgumentParser()
-    # parser.add_argument('-u', '--username', required=True, help='账号')
-    # parser.add_argument('-p', '--password', required=True, help='密码')
     parser.add_argument('-m', '--mode', required=True, type=int, choices=[1, 2],
                         help='运行模式.1为运动签到;2为运动签退')
     args = parser.parse_args()
-    #
-    # username = args.username
-    # password = args.password
     _mode = args.mode
 
     auths = os.environ.get('XJTU_AUTH').split('&')
 
-    # logger.info("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
-    # logger.info("共有" + str(len(auths)) + "个账号")
-
-    print("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
-    print("共有" + str(len(auths)) + "个账号")
+    logger.info("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
+    logger.info("共有" + str(len(auths)) + "个账号")
 
     for auth in auths:
+        time.sleep(10 + 20 * random.random())
+        _username, _password = auth.split('$$')
+        print("-------------------------------------")
         try:
-            time.sleep(10 + 20 * random.random())
-            _username, _password = auth.split('$$')
-            # 打印每个信息并分割
-            # logger.info("开始执行" + _username + "的任务")
-            print("-------------------------------------")
-            print("开始执行" + _username + "的任务")
+            logger.info("开始执行账号: " + _username)
             work(_username, _password, _mode)
-            # logger.info("执行" + _username + "的任务结束")
-            print("执行" + _username + "的任务结束")
+            logger.info("执行" + _username + "的任务结束")
         except Exception as e:
-            print("账号" + _username + "执行失败")
-            print(e)
+            logger.warning("账号" + _username + "执行失败")
+            logger.error(str(e))
+        print("-------------------------------------")
