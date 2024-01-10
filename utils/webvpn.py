@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from urllib.parse import urlparse
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.hazmat.backends import default_backend
@@ -23,6 +24,7 @@ class WebVPN:
             options.add_argument("--disable-dev-shm-usage")
         self.driver = webdriver.Chrome(options=options)
         self.wait = WebDriverWait(self.driver, 10)
+        self.actions = ActionChains(self.driver)
         self.wrdvpnIV = None
         self.wrdvpnKey = None
 
@@ -57,6 +59,9 @@ class WebVPN:
             return self.driver.window_handles[-1]
         except ValueError:
             print('Invalid URL')
+    
+    def window_handles(self):
+        return self.driver.window_handles
 
     def current_window(self):
         return self.driver.current_window_handle
@@ -74,6 +79,13 @@ class WebVPN:
             self.driver.close()
             self.driver.switch_to.window(current_window)
 
+    def move_to_element(self, element):
+        self.actions.move_to_element(element).perform()
+        self.wait.until(EC.visibility_of(element))
+        
+    def refresh(self):
+        self.driver.refresh()
+    
     @staticmethod
     def encrypt_url(url, key, iv):
         parsed_url = urlparse(url)
