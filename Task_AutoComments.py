@@ -1,6 +1,7 @@
 # Author: Miracle24
 # Time: 2024/1/9
 # Desc: XJTU研究生自动评教
+# cron: 30 16 15 1,6 *
 
 from selenium.webdriver.common.by import By
 from utils.webvpn import WebVPN
