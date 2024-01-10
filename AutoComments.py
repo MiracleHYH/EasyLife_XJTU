@@ -58,9 +58,9 @@ def get_course_info(webvpn, pj_courses):
     src_window = webvpn.driver.current_window_handle
     new_window = webvpn.open(URLs.yjsglxxxt_url)
     webvpn.switch_to_window(new_window)
-    time.sleep(5)
+    time.sleep(10)
     webvpn.go(URLs.yjsglxxxt_wdpyjh_url)
-    time.sleep(5)
+    time.sleep(10)
 
     pyjh_table = webvpn.driver.find_element(By.ID, "sample-table-1")
     pyjh_rows = pyjh_table.find_elements(By.XPATH, "./tbody/tr")
@@ -81,7 +81,7 @@ def get_course_info(webvpn, pj_courses):
         logger.info(f"开始获取课程: {course_name}-{course_year} 的信息")
         info = {}
         webvpn.go(URLs.yjsglxxxt_kckk_url.format(code=course_code, year=course_year))
-        time.sleep(5)
+        time.sleep(10)
         course_table = webvpn.driver.find_element(By.CLASS_NAME, "tblMain")
         if course_table is None:
             logger.warning(f"课程: {course_name}-{course_year} 的信息获取失败")
@@ -114,12 +114,12 @@ def extract_text_from_column(column):
     return [item.text for item in column]
 
 
-def work(username, password):
-    webvpn = WebVPN(debug=True)
+def work(username, password, debug=False):
+    webvpn = WebVPN(debug=debug)
     webvpn.login(username, password)
 
     webvpn.go(URLs.yjszhpjxt_url)
-    time.sleep(5)
+    time.sleep(10)
 
     pj_list = []
     pj_columns = webvpn.driver.find_elements(By.XPATH, "//div[@view_id='sshdMainTable']/div[2]/div[2]/div/div")
@@ -140,7 +140,7 @@ def work(username, password):
     for (row_idx, pj) in enumerate(pj_list):
         logger.info(f"开始评教: {pj.get('semester')}-{pj.get('name')}-{pj.get('class')} ({pj.get('teacher')})")
         webvpn.refresh()
-        time.sleep(5)
+        time.sleep(3)
         
         
         pj_button = webvpn.driver.find_element(By.XPATH, f"//div[@view_id='sshdMainTable']/div[2]/div[2]/div/div[6]/div[{row_idx + 1}]//button")
@@ -151,11 +151,10 @@ def work(username, password):
         pj_button.click()
         src_window = webvpn.current_window()
         webvpn.switch_to_window(webvpn.window_handles()[-1])
-        time.sleep(5)
+        time.sleep(10)
         
         info = course_info.get((pj.get('name'), pj.get('semester')[:4]))
         
-        submit_button = webvpn.driver.find_element(By.XPATH, "//div[@view_id='submitButton']/div/button")
         comment_table = webvpn.driver.find_element(By.XPATH, "//div[@view_id='zbForm']/div/div")
         comment_rows = comment_table.find_elements(By.XPATH, "./div")
         # row 0: 课程名称,上课教师 (会自动填充，不用填写)
@@ -231,6 +230,15 @@ def work(username, password):
             comment_rows[12].find_element(By.XPATH, "./div[2]/div/div/div[1]").click()
         else:
             comment_rows[12].find_element(By.XPATH, "./div[2]/div/div/div[2]").click()
+        
+        # row 13 ~ (如有其他textarea，都填无)
+        if len(comment_rows) > 13:
+            for comment_row in comment_rows[13:]:
+                comment_row.find_element(By.XPATH, ".//textarea").send_keys("无")
+        
+        submit_button = webvpn.driver.find_element(By.XPATH, "//div[@view_id='submitButton']/div/button")
+        webvpn.move_to_element(submit_button)
+        submit_button.click()
         webvpn.close_current_window()
         webvpn.switch_to_window(src_window)
 
@@ -240,14 +248,16 @@ if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-u', '--username', type=str, required=True, help='账号')
     parser.add_argument('-p', '--password', type=str, required=True, help='密码')
+    parser.add_argument('-d', '--debug', action='store_true', help='调试模式')
     args = parser.parse_args()
 
     _username = args.username
     _password = args.password
+    _debug = args.debug
 
     try:
         logger.info("开始执行" + _username + "的任务")
-        work(_username, _password)
+        work(_username, _password, _debug)
         logger.info("执行" + _username + "的任务结束")
     except Exception as e:
         logger.warning("账号" + _username + "执行失败")
