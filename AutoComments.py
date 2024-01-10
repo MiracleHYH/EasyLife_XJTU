@@ -234,6 +234,7 @@ def work(username, password, debug=False):
         # row 13 ~ (如有其他textarea，都填无)
         if len(comment_rows) > 13:
             for comment_row in comment_rows[13:]:
+                webvpn.move_to_element(comment_row)
                 comment_row.find_element(By.XPATH, ".//textarea").send_keys("无")
         
         submit_button = webvpn.driver.find_element(By.XPATH, "//div[@view_id='submitButton']/div/button")
