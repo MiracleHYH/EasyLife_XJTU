@@ -10,6 +10,15 @@ from utils.language import detect_language
 import time
 from argparse import ArgumentParser
 
+import logging
+
+logger = logging.getLogger(__name__)
+console = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console.setFormatter(formatter)
+logger.addHandler(console)
+logger.setLevel(logging.INFO)
+
 
 szkc_list = [
     "工程伦理",
@@ -69,13 +78,13 @@ def get_course_info(webvpn, pj_courses):
     # 枚举每门课程
     
     for (course_code, course_name, course_type, course_year) in course_list:
-        print(f"开始获取课程: {course_name}-{course_year} 的信息")
+        logger.info(f"开始获取课程: {course_name}-{course_year} 的信息")
         info = {}
         webvpn.go(URLs.yjsglxxxt_kckk_url.format(code=course_code, year=course_year))
         time.sleep(5)
         course_table = webvpn.driver.find_element(By.CLASS_NAME, "tblMain")
         if course_table is None:
-            print(f"课程: {course_name}-{course_year} 的信息获取失败")
+            logger.warning(f"课程: {course_name}-{course_year} 的信息获取失败")
             continue
         course_cols = course_table.find_elements(By.XPATH, "./tbody/tr/td")
         for idx in range(0, len(course_cols), 2):
@@ -93,12 +102,10 @@ def get_course_info(webvpn, pj_courses):
             info[course_cols[idx].text] = course_cols[idx + 1].text
             info["课程类别"] = course_type
         course_info[(course_name, course_year)] = info
-        print(f"课程: {course_name}-{course_year} 的信息获取完毕")
+        logger.info(f"课程: {course_name}-{course_year} 的信息获取完毕")
         
     webvpn.close_current_window()
     webvpn.switch_to_window(src_window)
-    
-    print("所有课程信息获取完毕")
 
     return course_info
 
@@ -126,19 +133,19 @@ def work(username, password):
         }
         pj_list.append(task)
 
-    print(f"总计{num_pj}个评教任务")
+    logger.info(f"总计{num_pj}个评教任务")
     
     course_info = get_course_info(webvpn, [(item.get('name'), item.get('semester')[:4]) for item in pj_list])
 
     for (row_idx, pj) in enumerate(pj_list):
-        print(f"开始评教: {pj.get('semester')}-{pj.get('name')}-{pj.get('class')} ({pj.get('teacher')})")
+        logger.info(f"开始评教: {pj.get('semester')}-{pj.get('name')}-{pj.get('class')} ({pj.get('teacher')})")
         webvpn.refresh()
         time.sleep(5)
         
         
         pj_button = webvpn.driver.find_element(By.XPATH, f"//div[@view_id='sshdMainTable']/div[2]/div[2]/div/div[6]/div[{row_idx + 1}]//button")
         if pj_button.text == "修改":
-            print("已评教，跳过")
+            logger.info("已评教，跳过")
             continue
         webvpn.move_to_element(pj_button)
         pj_button.click()
@@ -226,7 +233,6 @@ def work(username, password):
             comment_rows[12].find_element(By.XPATH, "./div[2]/div/div/div[2]").click()
         webvpn.close_current_window()
         webvpn.switch_to_window(src_window)
-    input("Press any key to continue...")
 
 
 if __name__ == '__main__':
@@ -240,7 +246,9 @@ if __name__ == '__main__':
     _password = args.password
 
     try:
+        logger.info("开始执行" + _username + "的任务")
         work(_username, _password)
+        logger.info("执行" + _username + "的任务结束")
     except Exception as e:
-        print(e)
-        input("Press any key to continue...")
+        logger.warning("账号" + _username + "执行失败")
+        logger.error(e)

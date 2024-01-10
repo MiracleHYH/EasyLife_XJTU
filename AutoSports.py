@@ -13,13 +13,14 @@ import requests
 from config import URLs
 from utils.webvpn import WebVPN
 
-# import logging
-#
-# logger = logging.getLogger(__name__)
-# console = logging.StreamHandler()
-# formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-# console.setFormatter(formatter)
-# logger.addHandler(console)
+import logging
+
+logger = logging.getLogger(__name__)
+console = logging.StreamHandler()
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+console.setFormatter(formatter)
+logger.addHandler(console)
+logger.setLevel(logging.INFO)
 
 ll_map_rect = [
     [34.257162, 108.650036],
@@ -120,12 +121,10 @@ if __name__ == '__main__':
             time.sleep(10 + 20 * random.random())
             _username, _password = auth.split('$$')
             # 打印每个信息并分割
-            # logger.info("开始执行" + _username + "的任务")
-            print("-------------------------------------")
-            print("开始执行" + _username + "的任务")
+            logger.info("开始执行" + _username + "的任务")
             work(_username, _password, _mode)
-            # logger.info("执行" + _username + "的任务结束")
+            logger.info("执行" + _username + "的任务结束")
             print("执行" + _username + "的任务结束")
         except Exception as e:
-            print("账号" + _username + "执行失败")
-            print(e)
+            logger.warning("账号" + _username + "执行失败")
+            logger.error(e)
