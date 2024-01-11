@@ -4,6 +4,10 @@
 # Desc: XJTU研究生自动评教
 # Tag: EasyLife_XJTU
 # Cron: 30 16 15 1,6 *
+"""
+new Env('XJTU研究生自动评教');
+tag: EasyLife_XJTU
+"""
 
 from selenium.webdriver.common.by import By
 from utils.webvpn import WebVPN
