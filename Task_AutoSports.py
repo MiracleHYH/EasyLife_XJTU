@@ -1,18 +1,15 @@
 # Author: Miracle24
 # Time: 2024/1/8
 # Desc: XJTU研究生自动运动打卡
+# cron: 0 19,20 * * *
 
 import json
 import os
 import random
 import time
-from argparse import ArgumentParser
-
 import requests
-
 from config import URLs
 from utils.webvpn import WebVPN
-
 import logging
 
 logger = logging.getLogger("Task_AutoSports")
@@ -97,11 +94,18 @@ def work(username, password, mode):
 
 
 if __name__ == '__main__':
-    parser = ArgumentParser()
-    parser.add_argument('-m', '--mode', required=True, type=int, choices=[1, 2],
-                        help='运行模式.1为运动签到;2为运动签退')
-    args = parser.parse_args()
-    _mode = args.mode
+    
+    logger.info("开始读取签到状态")
+    _mode = 1
+    try:
+        with open("EasyLife_XJTU.Task_AutoSports.status.txt", "r") as file:
+            lst_mode = file.read()
+            if lst_mode == "1":
+                _mode = 2
+            else:
+                _mode = 1
+    except FileNotFoundError:
+        logger.info("未找到签到状态文件，将使用默认模式(签到)")
 
     auths = os.environ.get('XJTU_AUTH').split('&')
 
@@ -120,3 +124,7 @@ if __name__ == '__main__':
             logger.warning("账号" + _username + "执行失败")
             logger.error(str(e))
         print("-------------------------------------")
+    
+    logger.info("开始更新签到状态")
+    with open("EasyLife_XJTU.Task_AutoSports.status.txt", "w") as file:
+        file.write(str(_mode))
