@@ -5,7 +5,7 @@
 new Env('XJTU_研究生自动运动打卡');
 # cron: 0 19,20 * * *
 """
-
+from datetime import datetime
 import json
 import os
 import random
@@ -97,18 +97,23 @@ def work(username, password, mode):
 
 
 if __name__ == '__main__':
-    
-    logger.info("开始读取签到状态")
+
+    logger.info("开始读取运行状态")
     _mode = 1
+    today = datetime.now().strftime("%Y-%m-%d")
     try:
         with open("EasyLife_XJTU.Task_AutoSports.status.txt", "r") as file:
-            lst_mode = file.read()
-            if lst_mode == "1":
+            last_run_date = file.read()
+            if last_run_date == today:
                 _mode = 2
             else:
                 _mode = 1
     except FileNotFoundError:
         logger.info("未找到签到状态文件，将使用默认模式(签到)")
+
+    logger.info("开始缓存运行状态")
+    with open("EasyLife_XJTU.Task_AutoSports.status.txt", "w") as file:
+        file.write(today)
 
     auths = os.environ.get('XJTU_AUTH').split('&')
 
@@ -127,7 +132,3 @@ if __name__ == '__main__':
             logger.warning("账号" + _username + "执行失败")
             logger.error(str(e))
         print("-------------------------------------")
-    
-    logger.info("开始更新签到状态")
-    with open("EasyLife_XJTU.Task_AutoSports.status.txt", "w") as file:
-        file.write(str(_mode))
