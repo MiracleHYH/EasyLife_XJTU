@@ -2,11 +2,10 @@
 # Time: 2024/1/9
 # Name: 研究生自动评教
 # Desc: XJTU研究生自动评教
-# Tag: EasyLife_XJTU
-# Cron: 30 16 15 1,6 *
 """
 new Env('XJTU研究生自动评教');
 tag: EasyLife_XJTU
+cron: 30 16 15 1,6 *
 """
 
 from selenium.webdriver.common.by import By
