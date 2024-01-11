@@ -1,7 +1,10 @@
 # Author: Miracle24
 # Time: 2024/1/8
 # Desc: XJTU研究生自动运动打卡
+"""
+new Env('XJTU_研究生自动运动打卡');
 # cron: 0 19,20 * * *
+"""
 
 import json
 import os

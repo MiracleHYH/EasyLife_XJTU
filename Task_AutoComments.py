@@ -1,10 +1,8 @@
 # Author: Miracle24
 # Time: 2024/1/9
-# Name: 研究生自动评教
 # Desc: XJTU研究生自动评教
 """
-new Env('XJTU研究生自动评教');
-tag: EasyLife_XJTU
+new Env('XJTU_研究生自动评教');
 cron: 30 16 15 1,6 *
 """
 
