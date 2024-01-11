@@ -1,7 +1,9 @@
 # Author: Miracle24
 # Time: 2024/1/9
+# Name: 研究生自动评教
 # Desc: XJTU研究生自动评教
-# cron: 30 16 15 1,6 *
+# Tag: EasyLife_XJTU
+# Cron: 30 16 15 1,6 *
 
 from selenium.webdriver.common.by import By
 from utils.webvpn import WebVPN
