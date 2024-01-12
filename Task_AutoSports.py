@@ -50,50 +50,44 @@ def generate_random_point_in_rectangle(rect):
 
 
 def work(username, password, mode):
-    try:
-        webvpn = WebVPN()
-        webvpn.login(username, password)
-        webvpn.go(URLs.tmlyglpt_login_url)
-        time.sleep(10)
+    webvpn = WebVPN()
+    webvpn.login(username, password)
+    webvpn.go(URLs.tmlyglpt_login_url)
+    time.sleep(10)
 
-        token = webvpn.driver.execute_script("return localStorage.getItem('__1__token');")
-        selenium_cookies = webvpn.driver.get_cookies()
-        cookies = {c['name']: c['value'] for c in selenium_cookies}
+    token = webvpn.driver.execute_script("return localStorage.getItem('__1__token');")
+    selenium_cookies = webvpn.driver.get_cookies()
+    cookies = {c['name']: c['value'] for c in selenium_cookies}
 
-        headers = {
-            'Accept': '*/*',
-            'Accept-Encoding': 'gzip, deflate, br',
-            'Accept-Language': 'zh-CN,zh;q=0.9',
-            'Connection': 'keep-alive',
-            'Content-Type': 'application/json',
-            # 'Host': 'webvpn.xjtu.edu.cn',
-            # 'Origin': 'https://webvpn.xjtu.edu.cn',
-            # 'Referer': WebVPN.encrypt_url(WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_url), webvpn.wrdvpnKey, webvpn.wrdvpnIV),
-            'Token': token,
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
-        }
+    headers = {
+        'Accept': '*/*',
+        'Accept-Encoding': 'gzip, deflate, br',
+        'Accept-Language': 'zh-CN,zh;q=0.9',
+        'Connection': 'keep-alive',
+        'Content-Type': 'application/json',
+        # 'Host': 'webvpn.xjtu.edu.cn',
+        # 'Origin': 'https://webvpn.xjtu.edu.cn',
+        # 'Referer': WebVPN.encrypt_url(WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_url), webvpn.wrdvpnKey, webvpn.wrdvpnIV),
+        'Token': token,
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+    }
 
-        if mode == 1:
-            api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-            latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
-            data = json.dumps({
-                'courseInfoId': '1698877075970076673',
-                'latitude': latitude,
-                'longitude': longitude,
-                'sportType': '2',
-            })
-        else:
-            api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-            data = json.dumps({})
+    if mode == 1:
+        api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+        latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
+        data = json.dumps({
+            'courseInfoId': '1698877075970076673',
+            'latitude': latitude,
+            'longitude': longitude,
+            'sportType': '2',
+        })
+    else:
+        api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+        data = json.dumps({})
 
-        response = requests.post(api, data=data, headers=headers, cookies=cookies)
-        msg = json.loads(response.text)['msg']
-
-        # logger.info("执行结果:" + msg)
-        print("执行结果:" + msg)
-    except Exception as e:
-        # logger.info("执行失败:" + str(e))
-        print("执行失败:" + str(e))
+    response = requests.post(api, data=data, headers=headers, cookies=cookies)
+    msg = json.loads(response.text)['msg']
+    logger.info(msg)
 
 
 if __name__ == '__main__':
@@ -122,13 +116,13 @@ if __name__ == '__main__':
 
     for auth in auths:
         time.sleep(10 + 20 * random.random())
-        _username, _password = auth.split('$$')
         print("-------------------------------------")
         try:
+            _username, _password = auth.split('$$')
             logger.info("开始执行账号: " + _username)
             work(_username, _password, _mode)
-            logger.info("执行" + _username + "的任务结束")
+            logger.info("执行结束")
         except Exception as e:
-            logger.warning("账号" + _username + "执行失败")
+            logger.warning("执行失败")
             logger.error(str(e))
         print("-------------------------------------")
