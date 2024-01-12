@@ -111,15 +111,15 @@ if __name__ == '__main__':
 
     auths = os.environ.get('XJTU_AUTH').split('&')
 
-    logger.info("开始批量执行" + "签到" if _mode == 1 else "签退" + "任务")
-    logger.info("共有" + str(len(auths)) + "个账号")
+    logger.info(f"开始批量执行{'签到' if _mode == 1 else '签退'}任务")
+    logger.info(f"共有{len(auths)}个账号")
 
     for auth in auths:
         time.sleep(10 + 20 * random.random())
         print("-------------------------------------")
         try:
             _username, _password = auth.split('$$')
-            logger.info("开始执行账号: " + _username)
+            logger.info(f"开始执行账号: {_username}")
             work(_username, _password, _mode)
             logger.info("执行结束")
         except Exception as e:
