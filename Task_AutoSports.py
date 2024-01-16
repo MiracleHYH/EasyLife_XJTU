@@ -58,13 +58,17 @@ def random_point_nearby(latitude, longitude, radius_meters=10):
     random_angle = random.uniform(0, 2 * math.pi)
     random_distance = random.uniform(0, radius_meters)
 
+    # 分解随机距离为纬度和经度方向上的分量
+    delta_lat = math.cos(random_angle) * random_distance
+    delta_lon = math.sin(random_angle) * random_distance
+
     # 计算新纬度
-    delta_lat = random_distance / earth_radius
-    new_latitude = latitude + delta_lat * 180.0 / math.pi
+    delta_lat_deg = delta_lat / earth_radius * 180.0 / math.pi
+    new_latitude = latitude + delta_lat_deg
 
     # 计算新经度
-    delta_lon = random_distance / (earth_radius * math.cos(math.pi * latitude / 180.0))
-    new_longitude = longitude + delta_lon * 180.0 / math.pi
+    delta_lon_deg = delta_lon / (earth_radius * math.cos(math.pi * latitude / 180.0)) * 180.0 / math.pi
+    new_longitude = longitude + delta_lon_deg
 
     return new_latitude, new_longitude
 
