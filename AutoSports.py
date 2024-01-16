@@ -4,10 +4,12 @@
 
 import json
 import random
+import math
 import time
 from argparse import ArgumentParser
 
 import requests
+from datetime import datetime
 
 from config import URLs
 from utils.webvpn import WebVPN
@@ -48,7 +50,26 @@ def generate_random_point_in_rectangle(rect):
     return f'{final_y:.6f}', f'{final_x:.6f}'
 
 
-def work(username, password, mode):
+def random_point_nearby(latitude, longitude, radius_meters=10):
+    # 地球半径（米）
+    earth_radius = 6378137.0
+
+    # 随机方位角度和距离
+    random_angle = random.uniform(0, 2 * math.pi)
+    random_distance = random.uniform(0, radius_meters)
+
+    # 计算新纬度
+    delta_lat = random_distance / earth_radius
+    new_latitude = latitude + delta_lat * 180.0 / math.pi
+
+    # 计算新经度
+    delta_lon = random_distance / (earth_radius * math.cos(math.pi * latitude / 180.0))
+    new_longitude = longitude + delta_lon * 180.0 / math.pi
+
+    return new_latitude, new_longitude
+
+
+def work(username, password):
     webvpn = WebVPN()
     webvpn.login(username, password)
     webvpn.go(URLs.tmlyglpt_login_url)
@@ -71,6 +92,45 @@ def work(username, password, mode):
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
     }
 
+    info = None
+
+    # 获取当日签到状态
+    logger.info("获取当日签到状态")
+    ydxx_api = WebVPN.encrypt_url(URLs.tmlyglpt_ydxx_api.format(username=username), webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    response = requests.get(ydxx_api, headers=headers, cookies=cookies)
+    if response.status_code != 200:
+        logger.warning("获取当日签到状态失败")
+        return
+    response_text = json.loads(response.text)
+    if response_text['code'] != 200 or response_text['msg'] != '操作成功！':
+        logger.warning("获取当日签到状态失败")
+        return
+    if response_text['data']['total'] == 0:
+        logger.info("无签到记录，开始签到")
+        mode = 1
+    else:
+        info = response_text['data']['rows'][0]
+        if info['dayTime'] != datetime.now().strftime("%Y%m%d"):
+            logger.info("无签到记录，开始签到")
+            mode = 1
+        else:
+            if info['score'] == 1:
+                logger.info("今日已完成，无需重复打卡")
+                return
+            start_time = datetime.strptime(info['startTime'], "%Y-%m-%d %H:%M:%S")
+            end_time = datetime.strptime(info['endTime'], "%Y-%m-%d %H:%M:%S") if info['endTime'] else None
+            if end_time and end_time > start_time:
+                logger.info("已有记录签到时间不足未成功打卡，将重新签到")
+                mode = 1
+            else:
+                duration = start_time - datetime.now()
+                if duration.total_seconds() / 60 < 30:
+                    logger.warning("间隔时间未到30分钟，请稍后再试")
+                    return
+                else:
+                    logger.info("开始签退")
+                    mode = 2
+
     if mode == 1:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
         latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
@@ -80,35 +140,36 @@ def work(username, password, mode):
             'longitude': longitude,
             'sportType': '2',
         })
-    else:
+    elif mode == 2:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
+        assert info is not None
+        latitude, longitude = random_point_nearby(float(info['latitude']), float(info['longitude']), 10)
         data = json.dumps({
-            'latitude': latitude,
-            'longitude': longitude,
+            'latitude': f'{latitude: .6f}',
+            'longitude': f'{longitude: .6f}',
         })
+    else:
+        return
 
     response = requests.post(api, data=data, headers=headers, cookies=cookies)
     msg = json.loads(response.text)['msg']
 
-    logger.info("执行结果:" + msg)
+    logger.info(msg)
 
 
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument('-u', '--username', required=True, help='账号')
     parser.add_argument('-p', '--password', required=True, help='密码')
-    parser.add_argument('-m', '--mode', required=True, type=int, choices=[1, 2],
-                        help='运行模式.1为运动签到;2为运动签退')
+
     args = parser.parse_args()
 
     _username = args.username
     _password = args.password
-    _mode = args.mode
 
     try:
         logger.info("开始执行" + _username + "的任务")
-        work(_username, _password, _mode)
+        work(_username, _password)
         logger.info("执行" + _username + "的任务结束")
     except Exception as e:
         logger.warning("账号" + _username + "执行失败")

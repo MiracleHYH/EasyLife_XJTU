@@ -9,6 +9,7 @@ tmlyglpt_login_url = "https://org.xjtu.edu.cn/openplatform/oauth/authorize?appId
 tmlyglpt_wdhd_url = "https://ipahw.xjtu.edu.cn/pages/index/wdhd"
 tmlyglpt_ydqd_url = "https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=1&activityAddress=&courseInfoId=1698877075970076673"
 tmlyglpt_ydqt_url = "https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=2&activityAddress=&courseInfoId=1698877075970076673"
+tmlyglpt_ydxx_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/findPage?pageNo=1&pageSize=10&sportType_EQ=2&createTime_ORDER=DESC&courseInfoId_EQ=1698877075970076673&no_EQ={username}"
 tmlyglpt_ydqd_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/signRun"
 tmlyglpt_ydqt_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/signOutTrain"
 
