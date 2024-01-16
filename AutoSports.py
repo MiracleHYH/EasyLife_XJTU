@@ -22,10 +22,10 @@ logger.addHandler(console)
 logger.setLevel(logging.INFO)
 
 ll_map_rect = [
-    [34.257162, 108.650036],
-    [34.262517, 108.660423],
-    [34.257704, 108.666624],
-    [34.257704, 108.666624]
+    [34.25701, 108.652818],
+    [34.25822, 108.655327],
+    [34.257277, 108.656004],
+    [34.256025, 108.653533]
 ]
 
 
@@ -82,7 +82,11 @@ def work(username, password, mode):
         })
     else:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        data = json.dumps({})
+        latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
+        data = json.dumps({
+            'latitude': latitude,
+            'longitude': longitude,
+        })
 
     response = requests.post(api, data=data, headers=headers, cookies=cookies)
     msg = json.loads(response.text)['msg']
