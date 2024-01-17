@@ -127,7 +127,7 @@ def work(username, password):
                 logger.info("已有记录签到时间不足未成功打卡，将重新签到")
                 mode = 1
             else:
-                duration = start_time - datetime.now()
+                duration = datetime.now() - start_time
                 if duration.total_seconds() / 60 < 30:
                     logger.warning("间隔时间未到30分钟，请稍后再试")
                     return
