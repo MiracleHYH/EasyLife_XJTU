@@ -13,9 +13,34 @@
 
 ## 入门指南
 
-### 先决条件
+### 环境要求
+
+- Python 3.8+
+- Python 库
+  - requests
+  - selenium
+  - langid
+  - cryptography
+- Chrome 浏览器
+- Chrome 驱动
 
 ### 安装
+
+#### 本地
+
+```bash
+git clone https://github.com/MiracleHYH/EasyLife_XJTU.git
+```
+
+#### 青龙面板
+
+`订阅管理` -> `创建订阅`
+
+```
+ql repo https://github.com/MiracleHYH/EasyLife_XJTU.git "Task_" "" "utils|config" main "py"
+```
+
+定时规则：5 0 * * *
 
 ### 使用说明
 
