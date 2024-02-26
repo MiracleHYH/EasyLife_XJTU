@@ -12,6 +12,7 @@ import requests
 from datetime import datetime
 
 from config import URLs
+from config import SportsArea
 from utils.webvpn import WebVPN
 
 import logging
@@ -23,32 +24,7 @@ console.setFormatter(formatter)
 logger.addHandler(console)
 logger.setLevel(logging.INFO)
 
-ll_map_rect = [
-    [34.25701, 108.652818],
-    [34.25822, 108.655327],
-    [34.257277, 108.656004],
-    [34.256025, 108.653533]
-]
-
-
-def generate_random_point_in_rectangle(rect):
-    # Generate two random weights
-    r1, r2 = random.random(), random.random()
-
-    # Linearly interpolate between top-left and top-right for the first point
-    top_x = rect[0][1] * (1 - r1) + rect[1][1] * r1
-    top_y = rect[0][0] * (1 - r1) + rect[1][0] * r1
-
-    # Linearly interpolate between bottom-left and bottom-right for the second point
-    bottom_x = rect[3][1] * (1 - r1) + rect[2][1] * r1
-    bottom_y = rect[3][0] * (1 - r1) + rect[2][0] * r1
-
-    # Finally, linearly interpolate between the two points to get the random point inside the rectangle
-    final_x = top_x * (1 - r2) + bottom_x * r2
-    final_y = top_y * (1 - r2) + bottom_y * r2
-
-    return f'{final_y:.6f}', f'{final_x:.6f}'
-
+sign_center = SportsArea.cxg_tjc
 
 def random_point_nearby(latitude, longitude, radius_meters=10):
     # 地球半径（米）
@@ -135,19 +111,18 @@ def work(username, password):
                     logger.info("开始签退")
                     mode = 2
 
+    latitude, longitude = random_point_nearby(sign_center[0], sign_center[1], 10)
+    
     if mode == 1:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        latitude, longitude = generate_random_point_in_rectangle(ll_map_rect)
         data = json.dumps({
-            'courseInfoId': '1698877075970076673',
+            'courseInfoId': '1759468647346147329',
             'latitude': latitude,
             'longitude': longitude,
             'sportType': '2',
         })
     elif mode == 2:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        assert info is not None
-        latitude, longitude = random_point_nearby(float(info['latitude']), float(info['longitude']), 10)
         data = json.dumps({
             'latitude': f'{latitude: .6f}',
             'longitude': f'{longitude: .6f}',
