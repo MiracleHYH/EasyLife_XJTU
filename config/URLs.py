@@ -1,5 +1,8 @@
 # Desc: URL配置文件
 
+# 运动打卡CourseId
+SportsCourseId = "1759468647346147329"
+
 # webvpn
 webvpn_login_url = "https://webvpn.xjtu.edu.cn/login?oauth_login=true"
 webvpn_url = "https://webvpn.xjtu.edu.cn"
@@ -10,11 +13,11 @@ tmlyglpt_login_url = "https://org.xjtu.edu.cn/openplatform/oauth/authorize?appId
 # 我的活动
 tmlyglpt_wdhd_url = "https://ipahw.xjtu.edu.cn/pages/index/wdhd"
 # 我的活动-运动签到
-tmlyglpt_ydqd_url = "https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=1&activityAddress=&courseInfoId=1759468647346147329"
+tmlyglpt_ydqd_url = f"https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=1&activityAddress=&courseInfoId={SportsCourseId}"
 # 我的活动-运动签退
-tmlyglpt_ydqt_url = "https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=2&activityAddress=&courseInfoId=1759468647346147329"
-# 
-tmlyglpt_ydxx_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/findPage?pageNo=1&pageSize=10&sportType_EQ=2&createTime_ORDER=DESC&courseInfoId_EQ=1759468647346147329&no_EQ={username}"
+tmlyglpt_ydqt_url = f"https://ipahw.xjtu.edu.cn/pages/index/hdgl/hdgl_run?courseType=7&signType=2&activityAddress=&courseInfoId={SportsCourseId}"
+# 接口
+tmlyglpt_ydxx_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/findPage?pageNo=1&pageSize=10&sportType_EQ=2&createTime_ORDER=DESC&courseInfoId_EQ={SportsCourseId}&no_EQ={username}"
 tmlyglpt_ydqd_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/signRun"
 tmlyglpt_ydqt_api = "https://ipahw.xjtu.edu.cn/szjy-boot/api/v1/sportActa/signOutTrain"
 

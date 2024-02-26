@@ -77,7 +77,7 @@ def work(username, password):
 
     # 获取当日签到状态
     logger.info("获取当日签到状态")
-    ydxx_api = WebVPN.encrypt_url(URLs.tmlyglpt_ydxx_api.format(username=username), webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    ydxx_api = WebVPN.encrypt_url(URLs.tmlyglpt_ydxx_api.format(SportsCourseId=URLs.SportsCourseId, username=username), webvpn.wrdvpnKey, webvpn.wrdvpnIV)
     response = requests.get(ydxx_api, headers=headers, cookies=cookies)
     if response.status_code != 200:
         logger.warning("获取当日签到状态失败")
@@ -117,7 +117,7 @@ def work(username, password):
     if mode == 1:
         api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
         data = json.dumps({
-            'courseInfoId': '1759468647346147329',
+            'courseInfoId': URLs.SportsCourseId,
             'latitude': latitude,
             'longitude': longitude,
             'sportType': '2',
