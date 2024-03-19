@@ -145,7 +145,6 @@ if __name__ == '__main__':
     logger.info(f"共有{len(auths)}个账号")
 
     for auth in auths:
-        time.sleep(10 + 20 * random.random())
         print("-------------------------------------")
         try:
             _username, _password = auth.split('$$')
@@ -156,3 +155,4 @@ if __name__ == '__main__':
             logger.warning("执行失败")
             logger.error(str(e))
         print("-------------------------------------")
+        time.sleep(10)
