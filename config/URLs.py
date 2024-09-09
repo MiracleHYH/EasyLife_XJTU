@@ -1,7 +1,7 @@
 # Desc: URL配置文件
 
 # 运动打卡CourseId
-SportsCourseId = "1759468647346147329"
+SportsCourseId = "1828599707263381506"
 
 # webvpn
 webvpn_login_url = "https://webvpn.xjtu.edu.cn/login?oauth_login=true"
