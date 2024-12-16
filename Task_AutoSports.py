@@ -12,6 +12,8 @@ import random
 import math
 import time
 import requests
+from exceptiongroup import catch
+
 from config import URLs
 from config import SportsArea
 from utils.webvpn import WebVPN
@@ -77,63 +79,85 @@ def work(username, password):
 
     # 获取当日签到状态
     logger.info("获取当日签到状态")
-    ydxx_api = WebVPN.encrypt_url(URLs.tmlyglpt_ydxx_api.format(SportsCourseId=URLs.SportsCourseId, username=username), webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-    response = requests.get(ydxx_api, headers=headers, cookies=cookies)
-    if response.status_code != 200:
-        logger.warning("获取当日签到状态失败")
-        return
-    response_text = json.loads(response.text)
-    if response_text['code'] != 200 or response_text['msg'] != '操作成功！':
-        logger.warning("获取当日签到状态失败")
-        return
-    if response_text['data']['total'] == 0:
-        logger.info("无签到记录，开始签到")
-        mode = 1
-    else:
-        info = response_text['data']['rows'][0]
-        if info['dayTime'] != datetime.now().strftime("%Y%m%d"):
-            logger.info("无签到记录，开始签到")
-            mode = 1
-        else:
-            if info['score'] == 1:
-                logger.info("今日已完成，无需重复打卡")
-                return
-            start_time = datetime.strptime(info['startTime'], "%Y-%m-%d %H:%M:%S")
-            end_time = datetime.strptime(info['endTime'], "%Y-%m-%d %H:%M:%S") if info['endTime'] else None
-            if end_time and end_time > start_time:
-                logger.info("已有记录签到时间不足未成功打卡，将重新签到")
-                mode = 1
-            else:
-                duration = datetime.now() - start_time
-                if duration.total_seconds() / 60 < 30:
-                    logger.warning("间隔时间未到30分钟，请稍后再试")
-                    return
-                else:
-                    logger.info("开始签退")
-                    mode = 2
+    # ydxx_api = WebVPN.encrypt_url(URLs.tmlyglpt_ydxx_api.format(SportsCourseId=URLs.SportsCourseId, username=username), webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    # response = requests.get(ydxx_api, headers=headers, cookies=cookies)
+    # if response.status_code != 200:
+    #     logger.warning("获取当日签到状态失败")
+    #     return
+    # response_text = json.loads(response.text)
+    # if response_text['code'] != 200 or response_text['msg'] != '操作成功！':
+    #     logger.warning("获取当日签到状态失败")
+    #     return
+    # if response_text['data']['total'] == 0:
+    #     logger.info("无签到记录，开始签到")
+    #     mode = 1
+    # else:
+    #     info = response_text['data']['rows'][0]
+    #     if info['dayTime'] != datetime.now().strftime("%Y%m%d"):
+    #         logger.info("无签到记录，开始签到")
+    #         mode = 1
+    #     else:
+    #         if info['score'] == 1:
+    #             logger.info("今日已完成，无需重复打卡")
+    #             return
+    #         start_time = datetime.strptime(info['startTime'], "%Y-%m-%d %H:%M:%S")
+    #         end_time = datetime.strptime(info['endTime'], "%Y-%m-%d %H:%M:%S") if info['endTime'] else None
+    #         if end_time and end_time > start_time:
+    #             logger.info("已有记录签到时间不足未成功打卡，将重新签到")
+    #             mode = 1
+    #         else:
+    #             duration = datetime.now() - start_time
+    #             if duration.total_seconds() / 60 < 30:
+    #                 logger.warning("间隔时间未到30分钟，请稍后再试")
+    #                 return
+    #             else:
+    #                 logger.info("开始签退")
+    #                 mode = 2
 
     latitude, longitude = random_point_nearby(sign_center[0], sign_center[1], 10)
-    
-    if mode == 1:
-        api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        data = json.dumps({
-            'courseInfoId': URLs.SportsCourseId,
-            'latitude': latitude,
-            'longitude': longitude,
-            'sportType': '2',
-        })
-    elif mode == 2:
-        api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
-        data = json.dumps({
-            'latitude': f'{latitude: .6f}',
-            'longitude': f'{longitude: .6f}',
-        })
-    else:
-        return
 
+    # if mode == 1:
+    #     api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    #     data = json.dumps({
+    #         'courseInfoId': URLs.SportsCourseId,
+    #         'latitude': latitude,
+    #         'longitude': longitude,
+    #         'sportType': '2',
+    #     })
+    # elif mode == 2:
+    #     api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    #     data = json.dumps({
+    #         'latitude': f'{latitude: .6f}',
+    #         'longitude': f'{longitude: .6f}',
+    #     })
+    # else:
+    #     return
+    #
+    # response = requests.post(api, data=data, headers=headers, cookies=cookies)
+    # msg = json.loads(response.text)['msg']
+    #
+    # logger.info(msg)
+
+
+    api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    data = json.dumps({
+        'latitude': f'{latitude: .6f}',
+        'longitude': f'{longitude: .6f}',
+    })
+    response = requests.post(api, data=data, headers=headers, cookies=cookies)
+    if json.loads(response.text)['success']:
+        logger.info("签退成功")
+        return
+    logger.info("开始签到")
+    api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
+    data = json.dumps({
+        'courseInfoId': URLs.SportsCourseId,
+        'latitude': latitude,
+        'longitude': longitude,
+        'sportType': '2',
+    })
     response = requests.post(api, data=data, headers=headers, cookies=cookies)
     msg = json.loads(response.text)['msg']
-
     logger.info(msg)
 
 
