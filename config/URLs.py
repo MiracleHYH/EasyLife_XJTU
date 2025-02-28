@@ -33,3 +33,7 @@ yjsglxxxt_login_url = "https://org.xjtu.edu.cn/openplatform/oauth/authorize?appI
 yjsglxxxt_url = "http://gmis.xjtu.edu.cn/pyxx/"
 yjsglxxxt_wdpyjh_url = "http://gmis.xjtu.edu.cn/pyxx/pygl/pyjhcx"
 yjsglxxxt_kckk_url = "http://gmis.xjtu.edu.cn/pyxx/pygl/kckk/view/new/{code}/{year}"
+
+# IAIR签到
+iair_signin_home_url = "https://lcdp.xjtu.edu.cn/apaas/form/direct/DR67220d7ae4b0c69fa58a26f7"
+iair_signin_form_url = "https://lcdp.xjtu.edu.cn/apaas/form/details/670a33a0e4b056659df986be/overview/forms/670a33a0e4b056659df986c0/"
