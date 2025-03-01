@@ -29,6 +29,7 @@ logger.setLevel(logging.INFO)
 
 def work(username, password):
     options = Options()
+    options.add_argument('--headless')
     options.add_argument("--disable-gpu")
     options.add_argument("--window-size=1920,1080")
     options.add_argument("--no-sandbox")
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     logger.info(f"共有{len(auths)}个账号")
 
     # 在9~600秒内随机等待
-    sleep(int(9 + 591 * random()))
+    # sleep(int(9 + 591 * random()))
 
     for auth in auths:
         print("-------------------------------------")
