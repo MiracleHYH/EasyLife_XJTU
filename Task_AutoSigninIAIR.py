@@ -80,8 +80,9 @@ def work(username, password):
         (By.XPATH, "//div[contains(@class, 'ry-form__fill-show-btn') and contains(normalize-space(.), '提交')]")
     ))
     logger.info(f"账号{username}点击提交按钮")
+    driver.execute_script("arguments[0].scrollIntoView();", submit_button)
+    sleep(3)
     # driver.execute_script("arguments[0].click();", submit_button)
-    # sleep(3)  # 稍作等待
     submit_button.click()
 
 
