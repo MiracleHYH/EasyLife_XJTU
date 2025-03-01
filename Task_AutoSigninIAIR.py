@@ -100,6 +100,7 @@ if __name__ == '__main__':
     if weekday_num == 6:
         logger.info("周日不需要签到")
         exit(0)
+    logger.info(f"今天是星期{weekday_num + 1}, time: {datetime.datetime.now()}")
 
 
     auths = os.environ.get('XJTU_IAIR_AUTH').split('&')
