@@ -88,7 +88,6 @@ def work(username, password):
     driver.execute_script("arguments[0].click();", submit_button)
     # time.sleep(5)
     # logger.info(f"账号{username}提交成功,等待成功确认")
-    sleep(10)
     wait.until(EC.visibility_of_element_located(
         (By.XPATH, "//div[@role='alert' and contains(normalize-space(.), '提交成功')]")
     ))
