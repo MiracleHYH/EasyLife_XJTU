@@ -45,6 +45,13 @@ def work(username, password):
     driver = webdriver.Chrome(options=options)
     wait = WebDriverWait(driver, 15)
 
+    # logger.info(f"账号{username}设置地理位置")
+    driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
+        "latitude": 34.24764385304397,  # 纬度 (Latitude)
+        "longitude": 108.98003946842356,  # 经度 (Longitude)
+        "accuracy": 100  # 精度 (Accuracy)
+    })
+
     driver.get(URLs.iair_signin_home_url)
     username_input = wait.until(EC.presence_of_element_located((By.NAME, 'username')))
     password_input = wait.until(EC.presence_of_element_located((By.NAME, 'pwd')))
@@ -58,22 +65,16 @@ def work(username, password):
 
     # signin_tab = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='treeitem' and .//div[contains(@class, 'content-title') and text()='打卡']]")))
     # signin_tab.click()
-    sleep(10)
+    sleep(5)
 
 
     driver.get(URLs.iair_signin_form_url)
-    sleep(10)
+    # sleep(10)
     # logger.info(f"账号{username}进入打卡页面")
-    driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
-        "latitude": 34.24764385304397,  # 纬度 (Latitude)
-        "longitude": 108.98003946842356,  # 经度 (Longitude)
-        "accuracy": 100  # 精度 (Accuracy)
-    })
-    # logger.info(f"账号{username}设置地理位置")
     location_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'location-btn')))
     location_button.click()
     # logger.info(f"账号{username}点击获取地理位置")
-    sleep(10)
+    sleep(3)
     confirm_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'handle-btn') and normalize-space(text())='确定']")
     ))
@@ -84,7 +85,7 @@ def work(username, password):
     confirm_button.click()
     # logger.info(f"账号{username}确认地理位置")
 
-    sleep(10)
+    sleep(3)
     submit_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'ry-form__fill-show-btn') and contains(normalize-space(.), '提交')]")
     ))
