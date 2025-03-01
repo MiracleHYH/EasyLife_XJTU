@@ -109,7 +109,7 @@ if __name__ == '__main__':
     logger.info(f"共有{len(auths)}个账号")
 
     # 在9~600秒内随机等待
-    sleep(int(9 + 591 * random()))
+    # sleep(int(9 + 591 * random()))
 
     for auth in auths:
         max_trial = 3
