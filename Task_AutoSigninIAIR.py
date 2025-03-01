@@ -73,6 +73,8 @@ def work(username, password):
     submit_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'ry-form__fill-show-btn') and contains(normalize-space(.), '提交')]")
     ))
+    driver.execute_script("arguments[0].click();", submit_button)
+    sleep(3)  # 稍作等待
     submit_button.click()
 
 
