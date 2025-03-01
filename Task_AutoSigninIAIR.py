@@ -77,6 +77,10 @@ def work(username, password):
     confirm_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'handle-btn') and normalize-space(text())='确定']")
     ))
+    location_dialog = wait.until(EC.presence_of_element_located(
+        (By.CLASS_NAME, 'location-dialog')
+    ))
+    logger.info(f"账号{username} location dialog: {location_dialog.text}")
     confirm_button.click()
     # logger.info(f"账号{username}确认地理位置")
 
