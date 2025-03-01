@@ -17,6 +17,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
+import datetime
 
 import logging
 
@@ -94,6 +95,12 @@ def work(username, password):
 
 
 if __name__ == '__main__':
+    today = datetime.date.today()
+    weekday_num = today.weekday()
+    if weekday_num == 6:
+        logger.info("周日不需要签到")
+        exit(0)
+
 
     auths = os.environ.get('XJTU_IAIR_AUTH').split('&')
 
