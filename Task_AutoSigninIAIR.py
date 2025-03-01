@@ -54,36 +54,36 @@ def work(username, password):
 
     password_input.send_keys(Keys.RETURN)
 
-    # logger.info(f"账号{username}登录成功")
+    logger.info(f"账号{username}登录成功")
 
     # signin_tab = wait.until(EC.presence_of_element_located((By.XPATH, "//div[@role='treeitem' and .//div[contains(@class, 'content-title') and text()='打卡']]")))
     # signin_tab.click()
     sleep(5)
     driver.get(URLs.iair_signin_form_url)
-    # logger.info(f"账号{username}进入打卡页面")
+    logger.info(f"账号{username}进入打卡页面")
     driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
         "latitude": 34.24764385304397,  # 纬度 (Latitude)
         "longitude": 108.98003946842356,  # 经度 (Longitude)
         "accuracy": 100  # 精度 (Accuracy)
     })
-    # logger.info(f"账号{username}设置地理位置")
+    logger.info(f"账号{username}设置地理位置")
     location_button = wait.until(EC.element_to_be_clickable((By.CLASS_NAME, 'location-btn')))
     location_button.click()
-    # logger.info(f"账号{username}点击获取地理位置")
+    logger.info(f"账号{username}点击获取地理位置")
     confirm_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'handle-btn') and normalize-space(text())='确定']")
     ))
     sleep(3)
     confirm_button.click()
-    # logger.info(f"账号{username}确认地理位置")
+    logger.info(f"账号{username}确认地理位置")
 
     sleep(3)
     submit_button = wait.until(EC.element_to_be_clickable(
         (By.XPATH, "//div[contains(@class, 'ry-form__fill-show-btn') and contains(normalize-space(.), '提交')]")
     ))
-    # logger.info(f"账号{username}点击提交按钮")
+    logger.info(f"账号{username}点击提交按钮")
     driver.execute_script("arguments[0].click();", submit_button)
-    # logger.info(f"账号{username}提交成功,等待成功确认")
+    logger.info(f"账号{username}提交成功,等待成功确认")
     wait.until(EC.visibility_of_element_located(
         (By.XPATH, "//div[@role='alert' and contains(normalize-space(.), '提交成功')]")
     ))
@@ -100,7 +100,6 @@ if __name__ == '__main__':
     if weekday_num == 6:
         logger.info("周日不需要签到")
         exit(0)
-    logger.info(f"今天是星期{weekday_num + 1}, time: {datetime.datetime.now()}")
 
 
     auths = os.environ.get('XJTU_IAIR_AUTH').split('&')
