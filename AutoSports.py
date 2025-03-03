@@ -12,11 +12,8 @@ from time import sleep
 import requests
 from datetime import datetime
 
-from selenium.webdriver.common.devtools.v85.debugger import pause
-
 from config import URLs
 from config import SportsArea
-from utils.webvpn import WebVPN
 from utils.common import login, create_logger, create_browser
 
 logger = create_logger("AutoSports")
@@ -48,14 +45,11 @@ def random_point_nearby(latitude, longitude, radius_meters=10):
 
 def work(username, password):
     driver, wait = create_browser()
-
-    webvpn = WebVPN(debug=True)
-    webvpn.login(username, password)
-    webvpn.go(URLs.tmlyglpt_login_url)
+    login(driver, wait, URLs.tmlyglpt_login_url, username, password)
     time.sleep(10)
 
-    token = webvpn.driver.execute_script("return localStorage.getItem('__1__token');")
-    selenium_cookies = webvpn.driver.get_cookies()
+    token = driver.execute_script("return localStorage.getItem('_token');")
+    selenium_cookies = driver.get_cookies()
     cookies = {c['name']: c['value'] for c in selenium_cookies}
 
     headers = {
@@ -64,33 +58,28 @@ def work(username, password):
         'Accept-Language': 'zh-CN,zh;q=0.9',
         'Connection': 'keep-alive',
         'Content-Type': 'application/json',
-        # 'Host': 'webvpn.xjtu.edu.cn',
-        # 'Origin': 'https://webvpn.xjtu.edu.cn',
-        # 'Referer': WebVPN.encrypt_url(WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_url), webvpn.wrdvpnKey, webvpn.wrdvpnIV),
         'Token': token,
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0 (iPhone; CPU iPhone OS 16_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Mobile/15E148 Safari/604.1'
     }
 
     latitude, longitude = random_point_nearby(sign_center[0], sign_center[1], 10)
 
-    api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqt_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
     data = json.dumps({
         'latitude': f'{latitude: .6f}',
         'longitude': f'{longitude: .6f}',
     })
-    response = requests.post(api, data=data, headers=headers, cookies=cookies)
+    response = requests.post(URLs.tmlyglpt_ydqt_api, data=data, headers=headers, cookies=cookies)
     if json.loads(response.text)['success']:
         logger.info("签退成功")
         return
     logger.info("开始签到")
-    api = WebVPN.encrypt_url(URLs.tmlyglpt_ydqd_api, webvpn.wrdvpnKey, webvpn.wrdvpnIV)
     data = json.dumps({
         'courseInfoId': URLs.SportsCourseId,
         'latitude': latitude,
         'longitude': longitude,
         'sportType': '2',
     })
-    response = requests.post(api, data=data, headers=headers, cookies=cookies)
+    response = requests.post(URLs.tmlyglpt_ydqd_api, data=data, headers=headers, cookies=cookies)
     msg = json.loads(response.text)['msg']
     logger.info(msg)
 

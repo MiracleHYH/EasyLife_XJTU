@@ -18,7 +18,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import datetime
 from utils.common import login, create_logger, create_browser
 
-logger = create_logger("AutoSigninIAIR")
+logger = create_logger("Task_AutoSigninIAIR")
 
 
 def work(username, password):
