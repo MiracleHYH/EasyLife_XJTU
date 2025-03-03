@@ -12,7 +12,6 @@ import random
 import math
 import time
 import requests
-from exceptiongroup import catch
 
 from config import URLs
 from config import SportsArea
