@@ -12,37 +12,17 @@ import time
 from random import random
 from time import sleep
 from config import URLs
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 import datetime
+from utils.common import login, create_logger, create_browser
 
-import logging
-
-logger = logging.getLogger("Task_AutoSigninIAIR")
-console = logging.StreamHandler()
-formatter = logging.Formatter('[%(levelname)s] %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
-logger.setLevel(logging.INFO)
+logger = create_logger("AutoSigninIAIR")
 
 
 def work(username, password):
-    options = Options()
-    options.add_argument("--headless=new")
-    options.add_argument("--disable-gpu")
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-infobars")
-    # options.add_argument("--incognito")
-    options.add_experimental_option("prefs", {"profile.default_content_setting_values.geolocation": 1})
-    options.add_experimental_option("mobileEmulation", {"deviceName": "iPhone 14 Pro Max"})
-    driver = webdriver.Chrome(options=options)
-    wait = WebDriverWait(driver, 10)
+    driver, wait = create_browser()
 
     # logger.info(f"账号{username}设置地理位置")
     driver.execute_cdp_cmd("Emulation.setGeolocationOverride", {
@@ -50,16 +30,8 @@ def work(username, password):
         "longitude": 108.98003946842356,  # 经度 (Longitude)
         "accuracy": 100  # 精度 (Accuracy)
     })
-    driver.get(URLs.iair_signin_home_url)
 
-    username_input = wait.until(
-        EC.element_to_be_clickable((By.XPATH, "//div[@class='isMObil']//input[@class='username']")))
-    password_input = wait.until(EC.element_to_be_clickable((By.XPATH, "//div[@class='isMObil']//input[@class='pwd']")))
-
-    username_input.send_keys(username)
-    password_input.send_keys(password)
-
-    password_input.send_keys(Keys.RETURN)
+    login(driver, wait, URLs.iair_signin_home_url, username, password)
 
     location_button = wait.until(
         EC.element_to_be_clickable((By.XPATH, "//div[contains(@class,'ry-form__location-compact')]//button")))
@@ -79,6 +51,8 @@ def work(username, password):
     ))
     # logger.info(f"账号{username}点击提交按钮")
     submit_button.click()
+    # driver.execute_script("arguments[0].click();", submit_button)
+    # time.sleep(5)
     # logger.info(f"账号{username}提交成功,等待成功确认")
     wait.until(EC.visibility_of_element_located(
         (By.XPATH, "//div[@class='van-toast__text' and normalize-space(text())='提交成功']")
