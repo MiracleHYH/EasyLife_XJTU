@@ -9,14 +9,9 @@ from utils.language import detect_language
 import time
 from argparse import ArgumentParser
 
-import logging
+from utils.common import login, create_logger, create_browser
 
-logger = logging.getLogger("AutoComments")
-console = logging.StreamHandler()
-formatter = logging.Formatter('[%(levelname)s] %(message)s')
-console.setFormatter(formatter)
-logger.addHandler(console)
-logger.setLevel(logging.INFO)
+logger = create_logger("AutoComments")
 
 szkc_list = [
     "工程伦理",
