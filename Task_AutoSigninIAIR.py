@@ -79,20 +79,24 @@ if __name__ == '__main__':
 
     for auth in auths:
         max_trial = 3
+        success = False
+        _username, _password = None, None
+
         while max_trial > 0:
             max_trial -= 1
-            _username, _password = None, None
             try:
                 _username, _password = auth.split('$$')
                 logger.info(f"开始执行{_username}的任务, 剩余尝试次数{max_trial}")
                 work(_username, _password)
                 logger.info(f"账号{_username}执行成功")
-                send("人机所自动签到", f"账号{_username}签到成功")
+                success = True
                 break
             except Exception as e:
                 logger.warning(f"执行失败")
                 logger.error(str(e))
-                if _username is not None:
-                    send("人机所自动签到", f"账号{_username}签到失败\n {str(e)}")
                 sleep(10)
+
+        if _username is not None:
+            send("人机所自动签到", f"账号{_username}签到{'成功' if success else '失败'}")
+
         sleep(int(9 + 10 * random()))
